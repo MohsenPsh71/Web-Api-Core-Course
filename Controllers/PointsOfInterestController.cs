@@ -1,4 +1,5 @@
 ﻿using CityInfo.API.Models;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CityInfo.API.Controllers
@@ -119,6 +120,52 @@ namespace CityInfo.API.Controllers
             return NoContent();
 
         }
+        #endregion
+
+        #region  Edit with patch
+        [HttpPatch("{pontiOfInterestid}")]
+        public ActionResult PartiallyUpdatePointOfOnterest(
+            int cityId,
+            int pontiOfInterestid,
+            JsonPatchDocument<PointOfInterestForUpdateDto>  patchDocument
+            )
+        {
+            //find  city
+            var city = CitiesDataStore.current.Cities
+                .FirstOrDefault(c => c.Id == cityId);
+            if (city == null)
+                return NotFound();
+
+            // find point of interest
+            var pointOfInterestFromStore = city.PointsOfInterest
+                .FirstOrDefault(p => p.Id == pontiOfInterestid);
+            if (pointOfInterestFromStore == null)
+                return NotFound();
+
+            var pointOfInterestToPatch = new PointOfInterestForUpdateDto()
+            {
+                Name = pointOfInterestFromStore.Name,
+                Description=pointOfInterestFromStore.Description
+            };
+
+            patchDocument.ApplyTo(pointOfInterestToPatch, (Microsoft.AspNetCore.JsonPatch.Adapters.IObjectAdapter)ModelState);
+
+            if(!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            if(!TryValidateModel(pointOfInterestToPatch))
+            {
+                return  BadRequest(modelState: ModelState);
+            }
+
+            pointOfInterestFromStore.Name = pointOfInterestToPatch.Name;
+            pointOfInterestFromStore.Description = pointOfInterestToPatch.Description;
+
+            return NoContent();
+        }
+
         #endregion
     }
 }
