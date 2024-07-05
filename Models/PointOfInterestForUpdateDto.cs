@@ -2,10 +2,9 @@
 
 namespace CityInfo.API.Models
 {
-    //fluent validation
-    public class PointOfInterestForCreationDto
+    public class PointOfInterestForUpdateDto
     {
-        [Required(ErrorMessage ="Name Ra  Vared Konid")]
+        [Required(ErrorMessage = "Name Ra  Vared Konid")]
         [MaxLength(50)]
         public string Name { get; set; } = string.Empty;
 
