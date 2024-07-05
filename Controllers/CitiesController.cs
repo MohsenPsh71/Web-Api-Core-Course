@@ -26,10 +26,8 @@ namespace CityInfo.API.Controllers
             }
 
             return Ok(cityToReturn);
-
-            
+   
         }
 
-     
     }
 }
