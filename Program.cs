@@ -7,19 +7,40 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+
+
+#region Pipeline
+
+if(app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
 app.UseHttpsRedirection();
-
+app.UseRouting();
 app.UseAuthorization();
 
-app.MapControllers();
+//  Controller/Action/id?
+
+#pragma warning disable ASP0014 // Suggest using top level route registrations
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllers();
+});
+#pragma warning restore ASP0014 // Suggest using top level route registrations
+
+//app.MapControllerRoute(
+//    name: "default",
+//    pattern: "{controller=Home}/{action=Index}/{id?}");
+
+
+#endregion
+
+
 
 app.Run();
