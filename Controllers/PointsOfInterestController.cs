@@ -22,17 +22,27 @@ namespace CityInfo.API.Controllers
         public ActionResult<IEnumerable<PointOfInterestDto>>
             GetPointsOfInterest(int cityId)
         {
-            var city =
+            try
+            {
+                throw new Exception("Exeption sample ...");
+                var city =
                 CitiesDataStore.current.Cities
                 .FirstOrDefault(c => c.Id == cityId);
 
-            if (city == null)
+                if (city == null)
+                {
+                    _logger.LogInformation($"City with id {cityId} wasnt found");
+                    return NotFound();
+                }
+                return Ok(city.PointsOfInterest);
+            }
+            catch(Exception ex)
             {
-                _logger.LogInformation($"City with id {cityId} wasnt found");
-                return NotFound();
+                _logger.LogCritical($"Exeption getting  {cityId}", ex);
+                return StatusCode(500, "A Problem happend while ....");
             }
 
-            return Ok(city.PointsOfInterest);
+            
         }
 
         [HttpGet("{pointOfInterestId}", Name = "GetPointOfInterest")]
