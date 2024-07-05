@@ -1,4 +1,5 @@
 ﻿using CityInfo.API.Models;
+using CityInfo.API.Services;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,11 +11,16 @@ namespace CityInfo.API.Controllers
     public class PointsOfInterestController : ControllerBase
     {
         private readonly ILogger<PointsOfInterestController> _logger;
+        private readonly IMailService _localMailService;
+        private readonly CitiesDataStore citiesDataStore;
 
-        public PointsOfInterestController(ILogger<PointsOfInterestController> loger)
+        public PointsOfInterestController(ILogger<PointsOfInterestController> loger,
+            IMailService localMailService,
+            CitiesDataStore citiesDataStore)
         {
             _logger  = loger ?? throw new ArgumentNullException(nameof(loger));
-          
+            _localMailService = localMailService ?? throw new ArgumentNullException(nameof(localMailService));
+            this.citiesDataStore = citiesDataStore;
         }
 
 
@@ -24,9 +30,9 @@ namespace CityInfo.API.Controllers
         {
             try
             {
-                throw new Exception("Exeption sample ...");
+               // throw new Exception("Exeption sample ...");
                 var city =
-                CitiesDataStore.current.Cities
+                citiesDataStore.Cities
                 .FirstOrDefault(c => c.Id == cityId);
 
                 if (city == null)
@@ -51,7 +57,7 @@ namespace CityInfo.API.Controllers
             )
         {
             var city =
-                CitiesDataStore.current.Cities
+                citiesDataStore.Cities
                 .FirstOrDefault(c => c.Id == cityId);
 
             if (city == null)
@@ -82,14 +88,14 @@ namespace CityInfo.API.Controllers
                 return BadRequest();
             }
 
-            var city = CitiesDataStore.current
+            var city = citiesDataStore
                 .Cities.FirstOrDefault(c => c.Id == cityId);
             if (city == null)
             {
                 return NotFound();
             }
 
-            var maxpointOfInterestId = CitiesDataStore.current.Cities
+            var maxpointOfInterestId = citiesDataStore.Cities
                 .SelectMany(c => c.PointsOfInterest)
                 .Max(p => p.Id);
 
@@ -123,7 +129,7 @@ namespace CityInfo.API.Controllers
             PointOfInterestForUpdateDto pointOfInterest)
         {
             //find  city
-            var city = CitiesDataStore.current.Cities
+            var city = citiesDataStore.Cities
                 .FirstOrDefault(c => c.Id == cityId);
             if (city == null)
                 return NotFound();
@@ -151,7 +157,7 @@ namespace CityInfo.API.Controllers
             )
         {
             //find  city
-            var city = CitiesDataStore.current.Cities
+            var city = citiesDataStore.Cities
                 .FirstOrDefault(c => c.Id == cityId);
             if (city == null)
                 return NotFound();
@@ -195,7 +201,7 @@ namespace CityInfo.API.Controllers
             int pontiOfInterestId)
         {
             //find  city
-            var city = CitiesDataStore.current.Cities
+            var city = citiesDataStore.Cities
                 .FirstOrDefault(c => c.Id == cityId);
             if (city == null)
                 return NotFound();
@@ -207,6 +213,12 @@ namespace CityInfo.API.Controllers
                 return NotFound();
 
             city.PointsOfInterest.Remove(point);
+
+            _localMailService
+                .Send(
+                "Point Of intrest deleted",
+                $"Point Of Interest {point.Name}with id {point.Id}"
+                );
 
             return NoContent();
         }
