@@ -1,5 +1,7 @@
 ﻿using CityInfo.API.Models;
+using CityInfo.API.Repositoties;
 using Microsoft.AspNetCore.Mvc;
+using Web_Api_Core_Course.Models;
 
 namespace CityInfo.API.Controllers
 {
@@ -7,31 +9,39 @@ namespace CityInfo.API.Controllers
     [Route("api/Cities")]
     public class CitiesController: ControllerBase
     {
-        private readonly CitiesDataStore citiesDataStore;
+       private readonly ICityInfoRepository _cityInfoRepository;    
 
-        public CitiesController(CitiesDataStore citiesDataStore)
+        public CitiesController(ICityInfoRepository cityInfoRepository)
         {
-            this.citiesDataStore = citiesDataStore;
+            _cityInfoRepository = cityInfoRepository ?? 
+                throw new ArgumentNullException(nameof(cityInfoRepository));        
         }
         [HttpGet]
-        public ActionResult<IEnumerable<CityDto>> GetCities()
+        public async Task<ActionResult<IEnumerable<CityWithoutPointOfInterestDto>>> GetCities()
         {
-            return Ok(citiesDataStore.Cities);
+            var Cities =await _cityInfoRepository.GetCitiesAsync();
+
+            var result = new List<CityWithoutPointOfInterestDto>();
+
+            foreach (var city in Cities)
+            {
+                result.Add(new CityWithoutPointOfInterestDto()
+                {
+                    Id = city.Id,
+                    Description =  city.Description,
+                    Name=city.Name
+                });
+            }
+
+            return Ok(result);
+           // return Ok(citiesDataStore.Cities);
         }
 
         [HttpGet("{id}")]
         public ActionResult<CityDto> GetCity(int id)
         {
 
-            var cityToReturn = citiesDataStore.Cities
-                 .FirstOrDefault(c => c.Id == id);
-
-            if(cityToReturn  == null)
-            {
-                return NotFound();
-            }
-
-            return Ok(cityToReturn);
+            return Ok();
    
         }
 

@@ -1,5 +1,6 @@
 using CityInfo.API;
 using CityInfo.API.DbContexts;
+using CityInfo.API.Repositoties;
 using CityInfo.API.Services;
 using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
@@ -41,6 +42,8 @@ builder.Services.AddDbContext<CityInfoDbContext>(option =>
         builder.Configuration["ConnectionStrings:SqlConnection"]
         );
 });
+builder.Services.AddScoped<ICityInfoRepository, CityInfoRepository>();
+
 var app = builder.Build();
 
 
