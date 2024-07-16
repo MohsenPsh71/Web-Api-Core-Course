@@ -174,7 +174,7 @@ namespace CityInfo.API.Controllers
                 Description=pointOfInterestFromStore.Description
             };
 
-            patchDocument.ApplyTo(pointOfInterestToPatch,  ModelState);
+            patchDocument.ApplyTo(pointOfInterestToPatch, (Microsoft.AspNetCore.JsonPatch.Adapters.IObjectAdapter)ModelState);
 
             if(!ModelState.IsValid)
             {

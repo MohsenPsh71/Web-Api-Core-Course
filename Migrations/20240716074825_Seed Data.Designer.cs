@@ -3,6 +3,7 @@ using CityInfo.API.DbContexts;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Web_Api_Core_Course.Migrations
 {
     [DbContext(typeof(CityInfoDbContext))]
-    partial class CityInfoDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240716074825_Seed Data")]
+    partial class SeedData
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -94,7 +97,7 @@ namespace Web_Api_Core_Course.Migrations
                             Id = 1,
                             CityId = 1,
                             Description = "Tell 02188454816",
-                            Name = "Academy mohsenpsh"
+                            Name = "Academy Barnamenevisan"
                         },
                         new
                         {
